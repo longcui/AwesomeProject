@@ -22,6 +22,32 @@ class Fruit extends Component {
   }
 }
 
+class Blink extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            showText: true
+        }
+
+        setInterval(() => {
+            this.setState( previousState => {
+                return {
+                    showText: !previousState.showText
+                }
+            });
+        }, 1000);
+    }
+
+    render(){
+        // let display = this.state.showText == true ? this.props.text : "";
+        if(this.state.showText){
+            return <Text>{this.props.text}</Text>
+        } else {
+            return <Text></Text>
+        }
+    };
+}
+
 
 export default class Bananas extends Component {
     render() {
@@ -32,6 +58,8 @@ export default class Bananas extends Component {
             <View>
               <Fruit name='d'/>
               <Fruit name='e'/>
+
+              <Blink text="ha ha!"/>
             </View>
         );
     }

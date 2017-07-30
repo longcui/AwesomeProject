@@ -14,83 +14,72 @@ import {
   View
 } from 'react-native';
 
-class Fruit extends Component {
-  render() {
-    return (
-        <Text>{this.props.name}</Text>
-    );
-  }
-}
 
-class Blink extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            showText: true
-        }
+const FBSDK = require('react-native-fbsdk');
+const {
+    LoginButton,
+    AccessToken,
+    ShareDialog,
+} = FBSDK;
 
-        setInterval(() => {
-            this.setState( previousState => {
-                return {
-                    showText: !previousState.showText
-                }
-            });
-        }, 1000);
-    }
-
-    render(){
-        // let display = this.state.showText == true ? this.props.text : "";
-        if(this.state.showText){
-            return <Text>{this.props.text}</Text>
-        } else {
-            return <Text></Text>
-        }
-    };
-}
-
-
-export default class Bananas extends Component {
-    render() {
-        let pic = {
-            uri: 'https://upload.wikimedia.org/wikipedia/commons/d/de/Bananavarieties.jpg'
-        };
+var Login = React.createClass({
+    render: function() {
         return (
             <View>
-              <Fruit name='d'/>
-              <Fruit name='e'/>
-
-              <Blink text="ha ha!"/>
+                <LoginButton
+                    publishPermissions={["publish_actions"]}
+                    onLoginFinished={
+                        (error, result) => {
+                            if (error) {
+                                alert("login has error: " + result.error);
+                            } else if (result.isCancelled) {
+                                alert("login is cancelled.");
+                            } else {
+                                AccessToken.getCurrentAccessToken().then(
+                                    (data) => {
+                                        alert(data.accessToken.toString())
+                                    }
+                                )
+                            }
+                        }
+                    }
+                    onLogoutFinished={() => alert("logout.")}/>
             </View>
         );
     }
-}
-
-export  class HelloWorldApp extends Component {
-  render() {
-    console.log("aa");
-    return (
-        <Text>Hello !~</Text>
-    );
-  }
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
 });
 
-AppRegistry.registerComponent('AwesomeProject', () => Bananas);
+// Build up a shareable link.
+const shareLinkContent = {
+    contentType: 'link',
+    contentUrl: "https://facebook.com",
+    contentDescription: 'Wow, check out this great site!',
+};
+
+// ...
+//
+// // Share the link using the share dialog.
+// shareLinkWithShareDialog() {
+//     var tmp = this;
+//     ShareDialog.canShow(this.state.shareLinkContent).then(
+//         function(canShow) {
+//             if (canShow) {
+//                 return ShareDialog.show(tmp.state.shareLinkContent);
+//             }
+//         }
+//     ).then(
+//         function(result) {
+//             if (result.isCancelled) {
+//                 alert('Share cancelled');
+//             } else {
+//                 alert('Share success with postId: '
+//                     + result.postId);
+//             }
+//         },
+//         function(error) {
+//             alert('Share fail with error: ' + error);
+//         }
+//     );
+// }
+
+AppRegistry.registerComponent('AwesomeProject', () => Login);
